@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>io.ktrace</groupId>
+  <artifactId>ktrace-example-vanilla-kafka</artifactId>
+  <version>0.1.0-SNAPSHOT</version>
+  <name>ktrace Example - Vanilla Kafka</name>
+  <description>Plain Java Kafka producer/consumer example with ktrace</description>
+  <url>https://github.com/ktrace/ktrace/ktrace-examples/ktrace-example-vanilla-kafka</url>
+  <inceptionYear>2026</inceptionYear>
+  <licenses>
+    <license>
+      <name>The Apache License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <id>ktrace</id>
+      <name>ktrace contributors</name>
+      <email>noreply@ktrace.io</email>
+    </developer>
+  </developers>
+  <scm>
+    <connection>scm:git:git://github.com/ktrace/ktrace.git/ktrace-examples/ktrace-example-vanilla-kafka</connection>
+    <developerConnection>scm:git:ssh://git@github.com/ktrace/ktrace.git/ktrace-examples/ktrace-example-vanilla-kafka</developerConnection>
+    <url>https://github.com/ktrace/ktrace/ktrace-examples/ktrace-example-vanilla-kafka</url>
+  </scm>
+  <dependencies>
+    <dependency>
+      <groupId>io.ktrace</groupId>
+      <artifactId>ktrace-core</artifactId>
+      <version>0.1.0-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>1.5.6</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+</project>

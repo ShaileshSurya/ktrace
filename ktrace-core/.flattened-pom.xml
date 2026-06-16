@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>io.ktrace</groupId>
+  <artifactId>ktrace-core</artifactId>
+  <version>0.1.0-SNAPSHOT</version>
+  <name>ktrace Core</name>
+  <description>Core ktrace library - plain Java, zero framework dependencies</description>
+  <url>https://github.com/ktrace/ktrace/ktrace-core</url>
+  <inceptionYear>2026</inceptionYear>
+  <licenses>
+    <license>
+      <name>The Apache License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <id>ktrace</id>
+      <name>ktrace contributors</name>
+      <email>noreply@ktrace.io</email>
+    </developer>
+  </developers>
+  <scm>
+    <connection>scm:git:git://github.com/ktrace/ktrace.git/ktrace-core</connection>
+    <developerConnection>scm:git:ssh://git@github.com/ktrace/ktrace.git/ktrace-core</developerConnection>
+    <url>https://github.com/ktrace/ktrace/ktrace-core</url>
+  </scm>
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.kafka</groupId>
+      <artifactId>kafka-clients</artifactId>
+      <version>3.7.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>2.0.13</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.17.1</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+</project>

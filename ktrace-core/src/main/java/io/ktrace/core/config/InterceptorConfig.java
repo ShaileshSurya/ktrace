@@ -26,16 +26,19 @@ public final class InterceptorConfig {
     private final int closeTimeoutMs;
     private final String applicationName;
     private final String clientId;
+    private final int publisherRetries;
 
     private InterceptorConfig(boolean enabled, String traceTopic,
                               int asyncQueueSize, int closeTimeoutMs,
-                              String applicationName, String clientId) {
+                              String applicationName, String clientId,
+                              int publisherRetries) {
         this.enabled = enabled;
         this.traceTopic = traceTopic;
         this.asyncQueueSize = asyncQueueSize;
         this.closeTimeoutMs = closeTimeoutMs;
         this.applicationName = applicationName;
         this.clientId = clientId;
+        this.publisherRetries = publisherRetries;
     }
 
     /**
@@ -51,13 +54,14 @@ public final class InterceptorConfig {
         int queueSize = resolveInt(configs, "ktrace.async-queue-size", 1000);
         int timeout = resolveInt(configs, "ktrace.close-timeout-ms", 5000);
         String appName = resolveString(configs, "ktrace.application-name", null);
+        int retries = resolveInt(configs, "ktrace.trace-topic-producer-retries", 0);
 
         String clientId = resolveString(configs, ProducerConfig.CLIENT_ID_CONFIG, null);
         if (clientId == null) {
             clientId = (appName != null) ? appName + "~1" : "ktrace-producer-1";
         }
 
-        return new InterceptorConfig(enabled, traceTopic, queueSize, timeout, appName, clientId);
+        return new InterceptorConfig(enabled, traceTopic, queueSize, timeout, appName, clientId, retries);
     }
 
     /**
@@ -137,6 +141,10 @@ public final class InterceptorConfig {
 
     public String getClientId() {
         return clientId;
+    }
+
+    public int getPublisherRetries() {
+        return publisherRetries;
     }
 
     private static boolean parseBoolean(Map<String, ?> configs, String key, boolean defaultValue) {

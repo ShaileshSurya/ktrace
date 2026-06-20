@@ -1,8 +1,5 @@
 package io.ktrace.core.config;
 
-import java.io.InputStream;
-import java.util.Properties;
-
 /**
  * Configuration for ktrace behavior.
  * <p>
@@ -82,34 +79,8 @@ public final class KTraceConfig {
      * @return the loaded configuration
      */
     private static KTraceConfig loadFromProperties() {
-        // 1. Check system property first (highest priority)
-        String sysProp = System.getProperty("ktrace.mdc.enabled");
-        if (sysProp != null) {
-            return new KTraceConfig(Boolean.parseBoolean(sysProp));
-        }
-
-        // 2. Check environment variable
-        String envVar = System.getenv("KTRACE_MDC_ENABLED");
-        if (envVar != null) {
-            return new KTraceConfig(Boolean.parseBoolean(envVar));
-        }
-
-        // 3. Check application.properties file on classpath
-        try (InputStream is = KTraceConfig.class.getClassLoader()
-                .getResourceAsStream("application.properties")) {
-            if (is != null) {
-                Properties props = new Properties();
-                props.load(is);
-                String fileProp = props.getProperty("ktrace.mdc.enabled");
-                if (fileProp != null) {
-                    return new KTraceConfig(Boolean.parseBoolean(fileProp));
-                }
-            }
-        } catch (Exception e) {
-            // Ignore - use default
-        }
-
-        // 4. Default: disabled
-        return new KTraceConfig(false);
+        // Delegate to centralized KTraceProperties loader
+        boolean mdcEnabled = KTraceProperties.getBoolean("ktrace.mdc.enabled", false);
+        return new KTraceConfig(mdcEnabled);
     }
 }

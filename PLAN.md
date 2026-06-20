@@ -35,10 +35,8 @@
 | `triggerOffset` | long | No | -1 if none |
 | `triggerConsumerGroup` | String | Yes | Trigger consumer group |
 | `producerTimestampMs` | long | No | Intercept timestamp |
-| `clientId` | String | No | Kafka client.id |
+| `clientId` | String | No | Kafka client.id (defaults to `<applicationName>~1`) |
 | `applicationName` | String | Yes | From config |
-| `messageKey` | String | Yes | Record key (toString) |
-| `messageSizeBytes` | int | No | Serialized value size |
 | `schemaVersion` | int | No | Currently 1 |
 
 ---
@@ -51,18 +49,18 @@ Stored per-thread to enable zero-config propagation through interceptors.
 
 ```java
 // Access ThreadLocal context
-static TraceContext current()                    // Get current context
-static void setCurrent(TraceContext context)     // Set current context
-static void clearCurrent()                       // Clear ThreadLocal (prevent leaks)
-static TraceContext currentOrCreateRoot()        // Get or create root context
+static TraceContext ktraceCurrent()                    // Get current context
+static void setKtraceCurrent(TraceContext context)     // Set current context
+static void clearKtraceCurrent()                       // Clear ThreadLocal (prevent leaks)
+static TraceContext ktraceCurrentOrCreateRoot()        // Get or create root context
 
 // Create contexts
-TraceContext.root(traceId, spanId)              // Root span (no parent)
-TraceContext.child(traceId, spanId, parentSpanId) // Child span
+TraceContext.root(traceId, spanId)                     // Root span (no parent)
+TraceContext.child(traceId, spanId, parentSpanId)      // Child span
 
 // Trigger metadata (consumer → producer flows)
-static void setTrigger(topic, partition, offset, group)
-static TriggerMetadata getTrigger()
+static void setKtraceTrigger(topic, partition, offset, group)
+static TriggerMetadata getKtraceTrigger()
 ```
 
 ### Propagation API (`io.ktrace.core.context.TraceContextPropagator`)
@@ -77,5 +75,5 @@ static void extractAndBind(ConsumerRecord<?, ?> record)      // Extract + Thread
 static void extractOrCreateAndBind(ConsumerRecord<?, ?> record) // Extract or create root
 ```
 
-**Producer flow**: Interceptor reads `TraceContext.current()`, generates new span, injects headers  
-**Consumer flow**: Call `extractAndBind(record)` to set context from incoming headers
+**Producer flow**: Interceptor reads `TraceContext.ktraceCurrent()`, generates new span, injects headers  
+**Consumer flow**: Call `extractAndBind(record)` to set context via `setKtraceCurrent()` and MDC

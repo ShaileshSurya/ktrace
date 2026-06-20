@@ -316,4 +316,119 @@ class TraceEventTest {
         // Then: applicationName should be null
         assertThat(event.getApplicationName()).isNull();
     }
+
+    // Scenario 2: Child Event (With Trigger)
+
+    @Test
+    void childEvent_shouldLinkToParentViaParentSpanId() {
+        // Given: parent event context
+        String parentTraceId = "550e8400-e29b-41d4-a716-446655440000";
+        String parentSpanId = "6ba7b810-9dad-11d1-80b4-00c04fd430c8";
+
+        // When: child event is created
+        String childSpanId = "7c9e6679-7425-40de-944b-e07fc1f90ae7";
+        TraceEvent childEvent = TraceEvent.builder()
+                .traceId(parentTraceId)
+                .spanId(childSpanId)
+                .parentSpanId(parentSpanId)  // ← Links to parent
+                .producedTopic("notifications")
+                .producedPartition(-1)
+                .producedOffset(-1)
+                .triggerTopic("orders")
+                .triggerPartition(2)
+                .triggerOffset(100L)
+                .triggerConsumerGroup("order-processor-group")
+                .producerTimestampMs(1718582401000L)
+                .clientId("producer-1")
+                .applicationName("notification-service")
+                .messageKey("notification-456")
+                .messageSizeBytes(128)
+                .schemaVersion(1)
+                .build();
+
+        // Then: child should link to parent
+        assertThat(childEvent.getTraceId()).isEqualTo(parentTraceId);
+        assertThat(childEvent.getSpanId()).isEqualTo(childSpanId);
+        assertThat(childEvent.getParentSpanId()).isEqualTo(parentSpanId);
+        assertThat(childEvent.getSpanId()).isNotEqualTo(parentSpanId);  // New span!
+    }
+
+    @Test
+    void childEvent_shouldPreserveTraceId() {
+        // Given: parent trace ID
+        String parentTraceId = "550e8400-e29b-41d4-a716-446655440000";
+        String parentSpanId = "6ba7b810-9dad-11d1-80b4-00c04fd430c8";
+
+        // When: child event is created
+        TraceEvent childEvent = TraceEvent.builder()
+                .traceId(parentTraceId)  // ← Same trace ID (chain preserved)
+                .spanId("7c9e6679-7425-40de-944b-e07fc1f90ae7")
+                .parentSpanId(parentSpanId)
+                .producedTopic("notifications")
+                .producedPartition(-1)
+                .producedOffset(-1)
+                .triggerTopic("orders")
+                .triggerPartition(2)
+                .triggerOffset(100L)
+                .triggerConsumerGroup("order-processor-group")
+                .producerTimestampMs(System.currentTimeMillis())
+                .clientId("producer-1")
+                .messageSizeBytes(128)
+                .schemaVersion(1)
+                .build();
+
+        // Then: trace ID should be preserved
+        assertThat(childEvent.getTraceId()).isEqualTo(parentTraceId);
+    }
+
+    @Test
+    void childEvent_shouldHaveTriggerMetadata() {
+        // When: child event with trigger is created
+        TraceEvent childEvent = TraceEvent.builder()
+                .traceId("550e8400-e29b-41d4-a716-446655440000")
+                .spanId("7c9e6679-7425-40de-944b-e07fc1f90ae7")
+                .parentSpanId("6ba7b810-9dad-11d1-80b4-00c04fd430c8")
+                .producedTopic("notifications")
+                .producedPartition(-1)
+                .producedOffset(-1)
+                .triggerTopic("orders")          // ← Trigger metadata
+                .triggerPartition(2)
+                .triggerOffset(100L)
+                .triggerConsumerGroup("order-processor-group")
+                .producerTimestampMs(System.currentTimeMillis())
+                .clientId("producer-1")
+                .messageSizeBytes(128)
+                .schemaVersion(1)
+                .build();
+
+        // Then: trigger metadata should be set
+        assertThat(childEvent.getTriggerTopic()).isEqualTo("orders");
+        assertThat(childEvent.getTriggerPartition()).isEqualTo(2);
+        assertThat(childEvent.getTriggerOffset()).isEqualTo(100L);
+        assertThat(childEvent.getTriggerConsumerGroup()).isEqualTo("order-processor-group");
+    }
+
+    @Test
+    void childEvent_shouldAllowNullTriggerConsumerGroup() {
+        // When: child event with null consumer group
+        TraceEvent childEvent = TraceEvent.builder()
+                .traceId("550e8400-e29b-41d4-a716-446655440000")
+                .spanId("7c9e6679-7425-40de-944b-e07fc1f90ae7")
+                .parentSpanId("6ba7b810-9dad-11d1-80b4-00c04fd430c8")
+                .producedTopic("notifications")
+                .producedPartition(-1)
+                .producedOffset(-1)
+                .triggerTopic("orders")
+                .triggerPartition(2)
+                .triggerOffset(100L)
+                .triggerConsumerGroup(null)  // ← Nullable
+                .producerTimestampMs(System.currentTimeMillis())
+                .clientId("producer-1")
+                .messageSizeBytes(128)
+                .schemaVersion(1)
+                .build();
+
+        // Then: trigger consumer group should be null
+        assertThat(childEvent.getTriggerConsumerGroup()).isNull();
+    }
 }

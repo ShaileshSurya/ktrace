@@ -1,5 +1,8 @@
 package io.ktrace.core.event;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Objects;
 import java.util.UUID;
 
@@ -17,62 +20,116 @@ import java.util.UUID;
 public final class TraceEvent {
 
     // Trace context
+    @JsonProperty("traceId")
     private final String traceId;
+
+    @JsonProperty("spanId")
     private final String spanId;
+
+    @JsonProperty("parentSpanId")
     private final String parentSpanId;
 
     // Produced message metadata
+    @JsonProperty("producedTopic")
     private final String producedTopic;
+
+    @JsonProperty("producedPartition")
     private final int producedPartition;
+
+    @JsonProperty("producedOffset")
     private final long producedOffset;
 
     // Trigger metadata (what caused this produce)
+    @JsonProperty("triggerTopic")
     private final String triggerTopic;
+
+    @JsonProperty("triggerPartition")
     private final int triggerPartition;
+
+    @JsonProperty("triggerOffset")
     private final long triggerOffset;
+
+    @JsonProperty("triggerConsumerGroup")
     private final String triggerConsumerGroup;
 
     // Producer metadata
+    @JsonProperty("producerTimestampMs")
     private final long producerTimestampMs;
+
+    @JsonProperty("clientId")
     private final String clientId;
+
+    @JsonProperty("applicationName")
     private final String applicationName;
 
     // Message metadata
+    @JsonProperty("messageKey")
     private final String messageKey;
+
+    @JsonProperty("messageSizeBytes")
     private final int messageSizeBytes;
 
     // Schema versioning
+    @JsonProperty("schemaVersion")
     private final int schemaVersion;
 
-    private TraceEvent(Builder builder) {
+    @JsonCreator
+    private TraceEvent(
+            @JsonProperty("traceId") String traceId,
+            @JsonProperty("spanId") String spanId,
+            @JsonProperty("parentSpanId") String parentSpanId,
+            @JsonProperty("producedTopic") String producedTopic,
+            @JsonProperty("producedPartition") int producedPartition,
+            @JsonProperty("producedOffset") long producedOffset,
+            @JsonProperty("triggerTopic") String triggerTopic,
+            @JsonProperty("triggerPartition") int triggerPartition,
+            @JsonProperty("triggerOffset") long triggerOffset,
+            @JsonProperty("triggerConsumerGroup") String triggerConsumerGroup,
+            @JsonProperty("producerTimestampMs") long producerTimestampMs,
+            @JsonProperty("clientId") String clientId,
+            @JsonProperty("applicationName") String applicationName,
+            @JsonProperty("messageKey") String messageKey,
+            @JsonProperty("messageSizeBytes") int messageSizeBytes,
+            @JsonProperty("schemaVersion") int schemaVersion) {
+
         // Validate required fields
-        this.traceId = requireNonNull(builder.traceId, "traceId");
-        this.spanId = requireNonNull(builder.spanId, "spanId");
-        this.producedTopic = requireNonNull(builder.producedTopic, "producedTopic");
-        this.clientId = requireNonNull(builder.clientId, "clientId");
+        this.traceId = requireNonNull(traceId, "traceId");
+        this.spanId = requireNonNull(spanId, "spanId");
+        this.producedTopic = requireNonNull(producedTopic, "producedTopic");
+        this.clientId = requireNonNull(clientId, "clientId");
 
         // Validate UUID format
         validateUuid(this.traceId, "traceId");
         validateUuid(this.spanId, "spanId");
-        if (builder.parentSpanId != null) {
-            validateUuid(builder.parentSpanId, "parentSpanId");
+        if (parentSpanId != null) {
+            validateUuid(parentSpanId, "parentSpanId");
         }
 
         // Nullable fields
-        this.parentSpanId = builder.parentSpanId;
-        this.triggerTopic = builder.triggerTopic;
-        this.triggerConsumerGroup = builder.triggerConsumerGroup;
-        this.applicationName = builder.applicationName;
-        this.messageKey = builder.messageKey;
+        this.parentSpanId = parentSpanId;
+        this.triggerTopic = triggerTopic;
+        this.triggerConsumerGroup = triggerConsumerGroup;
+        this.applicationName = applicationName;
+        this.messageKey = messageKey;
 
         // Primitive fields
-        this.producedPartition = builder.producedPartition;
-        this.producedOffset = builder.producedOffset;
-        this.triggerPartition = builder.triggerPartition;
-        this.triggerOffset = builder.triggerOffset;
-        this.producerTimestampMs = builder.producerTimestampMs;
-        this.messageSizeBytes = builder.messageSizeBytes;
-        this.schemaVersion = builder.schemaVersion;
+        this.producedPartition = producedPartition;
+        this.producedOffset = producedOffset;
+        this.triggerPartition = triggerPartition;
+        this.triggerOffset = triggerOffset;
+        this.producerTimestampMs = producerTimestampMs;
+        this.messageSizeBytes = messageSizeBytes;
+        this.schemaVersion = schemaVersion;
+    }
+
+    // Builder constructor delegates to main constructor
+    private TraceEvent(Builder builder) {
+        this(builder.traceId, builder.spanId, builder.parentSpanId,
+             builder.producedTopic, builder.producedPartition, builder.producedOffset,
+             builder.triggerTopic, builder.triggerPartition, builder.triggerOffset,
+             builder.triggerConsumerGroup, builder.producerTimestampMs, builder.clientId,
+             builder.applicationName, builder.messageKey, builder.messageSizeBytes,
+             builder.schemaVersion);
     }
 
     private static String requireNonNull(String value, String fieldName) {

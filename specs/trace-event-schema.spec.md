@@ -92,7 +92,6 @@ A `TraceEvent` is an immutable value object with exactly these fields:
   "triggerOffset": 100,
   "triggerConsumerGroup": "order-processor-group",
   "producerTimestampMs": 1718582401000,
-  "clientId": "producer-2",
   "applicationName": "notification-service",
   "messageKey": "notification-456",
   "messageSizeBytes": 128,
@@ -179,15 +178,15 @@ A `TraceEvent` is an immutable value object with exactly these fields:
 
 ## Acceptance Criteria
 
-- [ ] `TraceEvent` class is immutable (all fields `final`, no setters)
-- [ ] All non-nullable fields throw `NullPointerException` if null passed to constructor
-- [ ] `traceId` and `spanId` are validated as UUID v4 format
-- [ ] `producedPartition` and `producedOffset` default to -1 when unknown
-- [ ] `TraceEventSerializer` produces valid JSON matching schema
-- [ ] `TraceEventDeserializer` handles null fields correctly
-- [ ] Round-trip serialization preserves all field values
+- [x] `TraceEvent` class is immutable (all fields `final`, no setters)
+- [x] All non-nullable fields throw `NullPointerException` if null passed to constructor
+- [x] `traceId` and `spanId` are validated as UUID v4 format
+- [x] `producedPartition` and `producedOffset` default to -1 when unknown
+- [x] `TraceEventSerializer` produces valid JSON matching schema
+- [x] `TraceEventDeserializer` handles null fields correctly
+- [x] Round-trip serialization preserves all field values
 - [ ] `messageKey` is truncated to 256 characters if longer
-- [ ] `schemaVersion` field is always set to 1
+- [x] `schemaVersion` field is always set to 1
 - [ ] Kafka record key (published to `__ktrace`) is set to `traceId`
 
 ---

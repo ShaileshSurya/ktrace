@@ -237,4 +237,102 @@ class AsyncTracePublisherTest {
                 .schemaVersion(1)
                 .build();
     }
+
+    // ====== Scenario 5: Queue Overflow Tests ======
+
+    @Test
+    void scenario5_queueFull_shouldNotBlockCaller() throws Exception {
+        // Given
+        publisher = new AsyncTracePublisher(
+                "__ktrace",
+                "localhost:9092",
+                10,
+                1000,
+                0
+        );
+
+        // Fill queue rapidly
+        for (int i = 0; i < 20; i++) {
+            publisher.publish(buildTestEvent("span-" + i));
+        }
+
+        // When: Measure time for additional event
+        long start = System.currentTimeMillis();
+        publisher.publish(buildTestEvent("span-final"));
+        long duration = System.currentTimeMillis() - start;
+
+        // Then: Should return quickly (non-blocking)
+        assertThat(duration).isLessThan(1000); // Should be < 1 second
+    }
+
+    @Test
+    void scenario5_queueFull_shouldHandleOverflow() throws Exception {
+        // Given
+        publisher = new AsyncTracePublisher(
+                "__ktrace",
+                "localhost:9092",
+                5,
+                1000,
+                0
+        );
+
+        // When: Publish more events than queue can hold
+        int successCount = 0;
+        int failureCount = 0;
+        for (int i = 0; i < 20; i++) {
+            if (publisher.publish(buildTestEvent("span-" + i))) {
+                successCount++;
+            } else {
+                failureCount++;
+            }
+        }
+
+        // Then: Some should be rejected due to queue overflow
+        assertThat(failureCount).isGreaterThan(0);
+        assertThat(successCount).isGreaterThan(0);
+    }
+
+    // ====== Scenario 7: Close Tests ======
+
+    @Test
+    void scenario7_close_shouldCloseSuccessfully() throws Exception {
+        // Given
+        publisher = new AsyncTracePublisher(
+                "__ktrace",
+                "localhost:9092",
+                10,
+                100, // Short timeout
+                0
+        );
+
+        // Publish events
+        for (int i = 0; i < 5; i++) {
+            publisher.publish(buildTestEvent("span-" + i));
+        }
+
+        // When
+        publisher.close();
+
+        // Then: Should complete without exception
+        assertThat(publisher).isNotNull();
+    }
+
+    @Test
+    void scenario7_close_multipleCallsIdempotent_shouldNotFail() throws Exception {
+        // Given
+        publisher = new AsyncTracePublisher(
+                "__ktrace",
+                "localhost:9092",
+                10,
+                1000,
+                0
+        );
+
+        // When: Call close twice
+        publisher.close();
+        publisher.close(); // Second call
+
+        // Then: Should not throw exception
+        assertThat(publisher).isNotNull();
+    }
 }

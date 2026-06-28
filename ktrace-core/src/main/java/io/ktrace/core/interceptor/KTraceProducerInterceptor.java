@@ -159,6 +159,8 @@ public class KTraceProducerInterceptor<K, V> implements ProducerInterceptor<K, V
             // Step 11: Publish (non-blocking, fire-and-forget)
             if (publisherAvailable && publisher != null) {
                 publisher.publish(event);
+            } else {
+                log.debug("ktrace publisher unavailable, skipping trace event");
             }
 
             // Step 12: Return modified record

@@ -23,10 +23,10 @@
             <artifactId>ktrace-core</artifactId>
         </dependency>
 
-        <!-- Logging -->
+        <!-- Simple logging for vanilla example -->
         <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
         </dependency>
     </dependencies>
 

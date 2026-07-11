@@ -35,6 +35,13 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- Validation (for @Min in KTraceProperties) -->
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+            <optional>true</optional>
+        </dependency>
+
         <!-- Annotation processing -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
